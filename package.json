@@ -12,6 +12,10 @@
     "build": "tsup",
     "release": "semantic-release"
   },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/unterdrueckt/easy-conf-manager.git"
+  },
   "release": {
     "branches": [
       "main"
