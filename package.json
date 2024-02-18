@@ -1,0 +1,22 @@
+{
+  "name": "easy-conf-manager",
+  "version": "1.0.0",
+  "description": "Lightweight and user-friendly configuration manager, written in TypeScript. It simplifies the process of managing configuration files, providing a straightforward interface for handling settings in your projects.",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup"
+  },
+  "author": "Markus Kind",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.11.18",
+    "semantic-release": "^23.0.2",
+    "tsup": "^8.0.2",
+    "typescript": "^5.3.3"
+  }
+}
