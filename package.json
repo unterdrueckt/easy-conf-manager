@@ -9,7 +9,13 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup"
+    "build": "tsup",
+    "release": "semantic-release"
+  },
+  "release": {
+    "branches": [
+      "main"
+    ]
   },
   "author": "Markus Kind",
   "license": "MIT",
