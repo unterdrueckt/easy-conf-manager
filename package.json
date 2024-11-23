@@ -1,7 +1,20 @@
 {
   "name": "easy-conf-manager",
   "version": "1.0.0",
+  "type": "module",
   "description": "Lightweight and user-friendly configuration manager, written in TypeScript. It simplifies the process of managing configuration files, providing a straightforward interface for handling settings in your projects.",
+  "homepage": "https://github.com/unterdrueckt/easy-conf-manager#readme",
+  "bugs": {
+    "url": "https://github.com/unterdrueckt/easy-conf-manager/issues"
+  },
+  "keywords": [
+    "configuration manager",
+    "typescript",
+    "settings",
+    "config",
+    "easy",
+    "lightweight"
+  ],
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -10,11 +23,16 @@
   ],
   "scripts": {
     "build": "tsup",
-    "release": "semantic-release"
+    "release": "semantic-release",
+    "clean": "rm -rf dist",
+    "lint": "tsc --noEmit",
+    "test": "echo \"No test specified\" && exit 1",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run lint && npm test"
   },
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/unterdrueckt/easy-conf-manager.git"
+    "type": "git",
+    "url": "https://github.com/unterdrueckt/easy-conf-manager.git"
   },
   "release": {
     "branches": [
@@ -23,6 +41,9 @@
   },
   "author": "Markus Kind",
   "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "devDependencies": {
     "@types/node": "^20.11.18",
     "semantic-release": "^23.0.2",

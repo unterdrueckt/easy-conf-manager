@@ -1,0 +1,5 @@
+# Exclude test files and configs
+tsup.config.ts
+tsconfig.json
+node_modules
+src/**/*.test.ts

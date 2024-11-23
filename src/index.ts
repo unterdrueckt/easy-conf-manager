@@ -1,6 +1,6 @@
 import path from "path";
 import * as fs from "fs";
-import { extend, isObject } from "./utils";
+import { extend, isObject } from "@src/utils.js";
 
 export type ConfigValue = number | boolean | string | null | undefined;
 
@@ -14,11 +14,15 @@ export interface Config {
 
 export class ConfigManager {
   private _configDir = process.env.CONFIG_DIR || "./config";
-  private _defaultConfPath = process.env.DEFAULT_CONF_PATH || path.join(this._configDir, "default.conf");
+  private _defaultConfPath =
+    process.env.DEFAULT_CONF_PATH || path.join(this._configDir, "default.conf");
   private defaultConfPathOverwrite = "";
-  private _mainConfPath = process.env.MAIN_CONF_PATH || path.join(this._configDir, "main.conf");
+  private _mainConfPath =
+    process.env.MAIN_CONF_PATH || path.join(this._configDir, "main.conf");
   private mainConfPathOverwrite = "";
-  private _templatePath = process.env.TEMPLATE_CONF_PATH || path.join(this._configDir, "template.conf");
+  private _templatePath =
+    process.env.TEMPLATE_CONF_PATH ||
+    path.join(this._configDir, "template.conf");
   private templatePathOverwrite = "";
 
   // Getter for configDir to make it reactive
@@ -64,9 +68,13 @@ export class ConfigManager {
 
   // Method to update paths when configDir changes
   private updatePaths(): void {
-    this._defaultConfPath = process.env.DEFAULT_CONF_PATH || path.join(this._configDir, "default.conf");
-    this._mainConfPath = process.env.MAIN_CONF_PATH || path.join(this._configDir, "main.conf");
-    this._templatePath = process.env.TEMPLATE_PATH || path.join(this._configDir, "template.conf");
+    this._defaultConfPath =
+      process.env.DEFAULT_CONF_PATH ||
+      path.join(this._configDir, "default.conf");
+    this._mainConfPath =
+      process.env.MAIN_CONF_PATH || path.join(this._configDir, "main.conf");
+    this._templatePath =
+      process.env.TEMPLATE_PATH || path.join(this._configDir, "template.conf");
   }
 
   private config: Config = {};
@@ -358,8 +366,8 @@ export class ConfigManager {
 }
 
 const globalConfigManager = new ConfigManager();
-export default globalConfigManager;
 
 const utils = { extend, isObject };
 
+export default globalConfigManager;
 export { utils };
