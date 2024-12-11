@@ -16,16 +16,26 @@ export function isObject(item: any): boolean {
  * @returns {any} The modified target object.
  */
 export function extend(deepCopy: boolean, target: any, ...sources: any[]): any {
-  for (const source of sources) {
-    if (isObject(target) && isObject(source)) {
-      Object.keys(source).forEach((key) => {
+  if (!sources.length) {
+    return target;
+  }
+
+  const source = sources.shift();
+
+  if (isObject(target) && isObject(source)) {
+    for (const key in source) {
+      if (Object.prototype.hasOwnProperty.call(source, key)) {
         if (deepCopy && isObject(source[key])) {
-          target[key] = extend(deepCopy, target[key] || {}, source[key]);
+          if (!target[key]) {
+            Object.assign(target, { [key]: {} });
+          }
+          extend(deepCopy, target[key], source[key]);
         } else {
-          target[key] = source[key];
+          Object.assign(target, { [key]: source[key] });
         }
-      });
+      }
     }
   }
-  return target;
+
+  return extend(deepCopy, target, ...sources);
 }
