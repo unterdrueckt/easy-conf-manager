@@ -3,11 +3,20 @@
 A lightweight and easy-to-use configuration manager.
 
 [![NPM Version](https://img.shields.io/npm/v/easy-conf-manager.svg?style=flat)](https://www.npmjs.com/package/easy-conf-manager)
+[![Beta Version](https://img.shields.io/npm/v/easy-conf-manager/beta.svg?label=beta&color=orange)](https://www.npmjs.com/package/easy-conf-manager/v/beta)
 [![NPM Downloads](https://img.shields.io/npm/dt/easy-conf-manager.svg?style=flat)](https://www.npmjs.com/package/easy-conf-manager)
+[![Build Status](https://github.com/unterdrueckt/easy-conf-manager/actions/workflows/release.yml/badge.svg)](https://github.com/unterdrueckt/easy-conf-manager/actions)
+[![TypeScript](https://img.shields.io/badge/TypeScript-%E2%9C%94-blue)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
+---
 
-## Features
+## ⚠️ Below Is for v1.1.0
+The following features and documentation refer to the stable release **v1.1.0**.
+
+If you want to explore the **new features in `2.0.0-beta`**, visit the [beta branch documentation](https://github.com/unterdrueckt/easy-conf-manager/tree/beta).
+
+---
 
 - **Human-Readable Config File**: Utilize a configuration file format inspired by TOML.
 - **Dynamic Comment Support**: Comments in the config file can be added programmatically.
