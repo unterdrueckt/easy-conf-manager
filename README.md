@@ -13,7 +13,7 @@ A lightweight and easy-to-use configuration manager.
 
 ## 🚀 Features
 
-- **Asynchronous API**: Non-blocking methods for optimal performance.
+- **Environment-Based Configuration**: Configurable paths using environment variables (`CONFIG_DIR`, `DEFAULT_CONF_PATH`, `MAIN_CONF_PATH`, `TEMPLATE_CONF_PATH`).
 - **Human-Readable Config Files**: Uses a configuration file format inspired by TOML.
 - **Dynamic Comment Support**: Programmatically add and manage comments associated with specific keys or sections.
 - **Default and Template Files**: Supports merging values from `default.conf` and `template.conf` into `main.conf`.
@@ -45,70 +45,35 @@ npm install easy-conf-manager@beta
 
 ## 🛠️ Usage
 
-<details>
-<summary>v1</summary>
+### Basic Examples
 
-### Basic Example
+You will always need this at the top of your project file
 
-```typescript
-import globalConfigManager from "easy-conf-manager";
-
-// Set a configuration value
-globalConfigManager.set("AppSettings.apiKey", "api-key");
-
-// Get a configuration value
-const apiKey = globalConfigManager.get("AppSettings.apiKey");
-console.log("API Key:", apiKey);
-
-// Modify a configuration value and add a comment
-globalConfigManager.set(
-  "AppSettings.apiKey",
-  "your-api-key",
-  "This is the setting for your app's API key."
-);
-```
-
-### Resulting `config.conf` File
-After running the above code, the `config.conf` file is auto-generated in the `/config` directory:
-
-```toml
-[AppSettings]
-# This is the setting for your app's API key.
-apiKey = "your-api-key"
-```
-
----
-
-### Default Configuration
-
-Set default values by creating a `default.conf` file in `/config`:
-
-```toml
-[AppSettings]
-appKey = "your-default-value"
-```
-
-</details>
-
-<details>
-<summary>v2</summary>
-
-### Basic Example
 ```typescript
 import { globalConfigManager } from "easy-conf-manager";
+```
 
+#### Set a Configuration Value with a Comment
+
+```typescript
+// Set a configuration value with a comment using .then for promise handling
+globalConfigManager
+  .set("AppSettings.apiKey", "your-api-key", "API key for external service")
+  .then(() => {
+    console.log("Configuration saved!");
+  })
+  .catch((error) => {
+    console.error("Failed to set configuration:", error);
+  });
+```
+
+or
+
+```typescript
 (async () => {
-  // Set a configuration value with a comment
-  await globalConfigManager.set("AppSettings.apiKey", "your-api-key", "API key for external service");
-
-  // Get a configuration value
-  const apiKey = await globalConfigManager.get("AppSettings.apiKey");
-  console.log("API Key:", apiKey);
-
-  // Retrieve comments for a specific key
-  const comments = await globalConfigManager.getComment("AppSettings.apiKey");
-  console.log("Comments:", comments);
-})();
+  // Set a configuration value with a comment in a async function
+  globalConfigManager.set("AppSettings.apiKey", "your-api-key", "API key for external service");
+})
 ```
 
 After running this code, the `main.conf` file in `/config` would look like this:
@@ -116,61 +81,96 @@ After running this code, the `main.conf` file in `/config` would look like this:
 ```toml
 [AppSettings]
 # API key for external service
-apiKey="your-api-key"
+apiKey = "your-api-key"
 ```
 
----
-### Default Configuration
+#### Retrieve the Saved Value
 
-You can provide default values using a `default.conf` file in the `/config` directory:
-
-```toml
-[AppSettings]
-apiKey="default-api-key"
-```
-
-If `main.conf` is missing, `easy-conf-manager` will create it by merging values from `default.conf` and `template.conf` (if available).
----
-### Advanced Features
-#### Comments Management
-Easily add and retrieve comments programmatically:
 ```typescript
-await globalConfigManager.set("Database.port", 5432, "Port for database connection");
-const portComment = await globalConfigManager.getComment("Database.port");
-console.log("Comment for Database.port:", portComment);
+// Get a configuration value
+const apiKey = globalConfigManager.get("AppSettings.apiKey");
+console.log(`API Key: "${apiKey}"`);
+
+// Retrieve comments for a specific key
+const comments = globalConfigManager.getComment("AppSettings.apiKey");
+console.log("Comments:", comments);
 ```
+
+When you run this code, you’ll see this output:
+
+```console
+API Key: "your-api-key"
+Comments: [ 'API key for external service' ]
+```
+
 ---
+
+### Advanced Configuration and Usage
+
+To provide default values use a `default.conf` file in the `/config` directory in the same style as the `main.conf`
+
+If `main.conf` is missing, `easy-conf-manager` will create it by merging values from `default.conf` or `template.conf` (if available).
+
+#### Configuration Paths
+
+`easy-conf-manager` uses environment variables to specify configuration paths. The following environment variables can be used:
+
+- **`CONFIG_DIR`**: Base directory for configuration files. Defaults to `./config`.
+- **`DEFAULT_CONF_PATH`**: Path to the default configuration file. Defaults to `${CONFIG_DIR}/default.conf`.
+- **`MAIN_CONF_PATH`**: Path to the main configuration file. Defaults to `${CONFIG_DIR}/main.conf`.
+- **`TEMPLATE_CONF_PATH`**: Path to the template configuration file. Defaults to `${CONFIG_DIR}/template.conf`.
+
+If environment variables are not provided, the default paths are used.
+
+---
+
 ## API Reference
+
 ### GET
-```ts
-get(key?: string): Promise<any>
+
+```typescript
+get(key?: string): any | undefined
 ```
-Retrieves a configuration value or section.
+
+Retrieves a configuration value or section. Returns `undefined` if the key or section does not exist.
+
 - **`key`**: The key to retrieve in `section.subkey` format. If omitted, returns the entire configuration.
+
+---
+
 ### GET COMMENT
-```ts
-getComment(key: string): Promise<string[] | undefined>
+
+```typescript
+getComment(key: string): string[] | undefined
 ```
+
 Retrieves comments associated with a specific key or section.
+
 - **`key`**: The key or section to retrieve comments for.
+
+---
+
 ### SET
-```ts
-set(key: string, value: any, comment?: string | string[]): Promise<void>
+
+```typescript
+await set(key: string, value: any, comment?: string | string[]): Promise<void>
 ```
-Sets a value for a specific key. Optionally adds a comment.
+
+Sets a value for a specific key with a optional comment in the configuration file. This method is asynchronous, so you need to await its execution or handle the returned promise.
+
 - **`key`**: The configuration key in `section.subkey` format (e.g., `AppSettings.apiKey`).
 - **`value`**: The value to set.
 - **`comment`** (optional): A single comment or an array of comments.
+
 ---
+
 ## Configuration Files
+
 By default, `easy-conf-manager` looks for the following files in the `/config` directory:
+
 - **`default.conf`**: Contains default values.
 - **`main.conf`**: The main configuration file. Created automatically if it doesn’t exist.
 - **`template.conf`**: Used as a fallback when creating `main.conf`.
-
-</details>
-
-
 
 ---
 
@@ -185,11 +185,10 @@ By default, `easy-conf-manager` looks for the following files in the `/config` d
 
 ## 🤝 Contributing
 
-I welcome contributions to improve this library!
+Contributions are welcome! Please open an issue or a pull request to improve the library.
 
 ---
 
 ## 📜 License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
-

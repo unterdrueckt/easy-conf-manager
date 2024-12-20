@@ -1,11 +1,21 @@
-import { ensureDirExists, fileExists, copyFile, readFile, writeFile } from "@src/utils/fileUtils.js";
-import {Config, ConfigWithComments, ConfigSection, ConfigValue } from "@src/types/ConfigTypes.js";
+import {
+  ensureDirExists,
+  fileExists,
+  copyFile,
+  readFile,
+  writeFile,
+} from "@src/utils/fileUtils.js";
+import {
+  Config,
+  ConfigWithComments,
+  ConfigSection,
+  ConfigValue,
+} from "@src/types/ConfigTypes.js";
 import { extend } from "@src/utils/objectUtils.js";
 import { ConfigParser } from "@src/config/ConfigParser.js";
 
 export class ConfigManager {
   private configData: ConfigWithComments = { config: {}, comments: {} };
-  private initPromise: Promise<void>;
 
   constructor(
     private configDir: string,
@@ -15,42 +25,36 @@ export class ConfigManager {
     autoInit: boolean = true
   ) {
     if (autoInit) {
-      this.initPromise = this.init();
-    } else {
-      this.initPromise = Promise.resolve();
+      this.init();
     }
   }
 
   /**
    * Initializes the configuration manager by ensuring files exist and loading the configuration.
    */
-  async init(): Promise<void> {
-    await ensureDirExists(this.configDir);
-    await this.ensureMainConfExists();
-    await this.loadConfig();
+  init(): void {
+    ensureDirExists(this.configDir);
+    this.ensureMainConfExists();
+    this.loadConfig();
   }
 
-  private async ensureInitialized(): Promise<void> {
-    await this.initPromise;
-  }
-
-  private async ensureMainConfExists(): Promise<void> {
-    if (!(await fileExists(this.mainConfPath))) {
-      if (this.templateConfPath && (await fileExists(this.templateConfPath))) {
-        await copyFile(this.templateConfPath, this.mainConfPath);
-      } else if (await fileExists(this.defaultConfPath)) {
-        await copyFile(this.defaultConfPath, this.mainConfPath);
+  private ensureMainConfExists(): void {
+    if (!fileExists(this.mainConfPath)) {
+      if (this.templateConfPath && fileExists(this.templateConfPath)) {
+        copyFile(this.templateConfPath, this.mainConfPath);
+      } else if (fileExists(this.defaultConfPath)) {
+        copyFile(this.defaultConfPath, this.mainConfPath);
       }
     }
   }
 
-  private async loadConfig(): Promise<void> {
-    const defaultConfigData = (await fileExists(this.defaultConfPath))
-      ? ConfigParser.parse(await readFile(this.defaultConfPath))
+  private loadConfig(): void {
+    const defaultConfigData = fileExists(this.defaultConfPath)
+      ? ConfigParser.parse(readFile(this.defaultConfPath))
       : { config: {}, comments: {} };
 
-    const mainConfigData = (await fileExists(this.mainConfPath))
-      ? ConfigParser.parse(await readFile(this.mainConfPath))
+    const mainConfigData = fileExists(this.mainConfPath)
+      ? ConfigParser.parse(readFile(this.mainConfPath))
       : { config: {}, comments: {} };
 
     this.configData = {
@@ -64,26 +68,30 @@ export class ConfigManager {
    *
    * @param {string} [key] - The key to retrieve in the format "section.subkey".
    *                         If not provided, returns the entire configuration with comments.
-   * @returns {Promise<ConfigValue | ConfigSection | ConfigWithComments>} - The requested configuration data.
+   * @returns {ConfigValue | ConfigSection | ConfigWithComments | undefined} - The requested configuration data or undefined if not found.
    */
-  async get(key?: string): Promise<ConfigValue | ConfigSection | ConfigWithComments> {
-    await this.ensureInitialized();
+  get(
+    key?: string
+  ): ConfigValue | ConfigSection | ConfigWithComments | undefined {
     if (!key) return this.configData;
 
     const [section, subkey] = key.split(".");
-    return subkey
-      ? this.configData.config[section]?.[subkey]
-      : this.configData.config[section];
+    if (!section) return undefined;
+
+    if (subkey) {
+      return this.configData.config[section]?.[subkey];
+    } else {
+      return this.configData.config[section] ?? undefined;
+    }
   }
 
   /**
    * Retrieves the comments associated with a specific key or section.
    *
    * @param {string} key - The key or section to retrieve comments for.
-   * @returns {Promise<string[] | undefined>} - The comments associated with the specified key or section.
+   * @returns {string[] | undefined} - The comments associated with the specified key or section.
    */
-  async getComment(key: string): Promise<string[] | undefined> {
-    await this.ensureInitialized();
+  getComment(key: string): string[] | undefined {
     return this.configData.comments[key];
   }
 
@@ -95,9 +103,11 @@ export class ConfigManager {
    * @param {string | string[]} [comment] - Optional comment(s) to associate with the key.
    * @throws {Error} If the key is not in a valid "section.subkey" format.
    */
-  async set(key: string, value: any, comment?: string | string[] ): Promise<void> {
-    await this.ensureInitialized();
-
+  async set(
+    key: string,
+    value: any,
+    comment?: string | string[]
+  ): Promise<void> {
     const [section, subkey] = key.split(".");
     if (!section || !subkey) {
       throw new Error(

@@ -1,30 +1,40 @@
-import { promises as fs } from "fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync, copyFileSync } from "fs";
 
-export async function ensureDirExists(dir: string): Promise<void> {
+/**
+ * Ensures the directory exists, creating it if necessary.
+ */
+export function ensureDirExists(dir: string): void {
   try {
-    await fs.mkdir(dir, { recursive: true });
+    mkdirSync(dir, { recursive: true });
   } catch (error: any) {
     if (error.code !== "EEXIST") throw error;
   }
 }
 
-export async function fileExists(filePath: string): Promise<boolean> {
-  try {
-    await fs.access(filePath);
-    return true;
-  } catch {
-    return false;
-  }
+/**
+ * Checks if a file exists.
+ */
+export function fileExists(filePath: string): boolean {
+  return existsSync(filePath);
 }
 
-export async function copyFile(sourcePath: string, destPath: string): Promise<void> {
-  await fs.copyFile(sourcePath, destPath);
+/**
+ * Copies a file from source to destination.
+ */
+export function copyFile(sourcePath: string, destPath: string): void {
+  copyFileSync(sourcePath, destPath);
 }
 
-export async function readFile(filePath: string): Promise<string> {
-  return fs.readFile(filePath, "utf-8");
+/**
+ * Reads a file and returns its content as a string.
+ */
+export function readFile(filePath: string): string {
+  return readFileSync(filePath, "utf-8");
 }
 
-export async function writeFile(filePath: string, data: string): Promise<void> {
-  await fs.writeFile(filePath, data, "utf-8");
+/**
+ * Writes data to a file.
+ */
+export function writeFile(filePath: string, data: string): void {
+  writeFileSync(filePath, data, "utf-8");
 }
