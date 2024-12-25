@@ -1,9 +1,11 @@
 import {
   ensureDirExists,
   fileExists,
+  isFileEmpty,
   copyFile,
   readFile,
   writeFile,
+  createEmptyFile,
 } from "@src/utils/fileUtils.js";
 import {
   Config,
@@ -44,10 +46,18 @@ export class ConfigManager {
         copyFile(this.templateConfPath, this.mainConfPath);
       } else if (fileExists(this.defaultConfPath)) {
         copyFile(this.defaultConfPath, this.mainConfPath);
+      } else {
+        createEmptyFile(this.mainConfPath);
+      }
+    } else if (isFileEmpty(this.mainConfPath)) {
+      if (this.templateConfPath && fileExists(this.templateConfPath)) {
+        copyFile(this.templateConfPath, this.mainConfPath);
+      } else if (fileExists(this.defaultConfPath)) {
+        copyFile(this.defaultConfPath, this.mainConfPath);
       }
     }
   }
-
+  
   private loadConfig(): void {
     const defaultConfigData = fileExists(this.defaultConfPath)
       ? ConfigParser.parse(readFile(this.defaultConfPath))
@@ -129,6 +139,6 @@ export class ConfigManager {
     }
 
     const serialized = ConfigParser.stringify(this.configData);
-    await writeFile(this.mainConfPath, serialized);
+    await writeFileAsync(this.mainConfPath, serialized);
   }
 }
